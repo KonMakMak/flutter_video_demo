@@ -1,10 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_video_demo/ui/bloc/video_controller.dart';
 import 'package:flutter_video_demo/ui/screen/video_upload_media_screen.dart';
 import 'package:flutter_video_demo/ui/screen/view_video_screen.dart';
+import 'package:get/get.dart';
 import 'package:get/route_manager.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  _initController() {
+    Get.put(VideoController());
+  }
+
+  @override
+  void initState() {
+    _initController();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
