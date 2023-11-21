@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_video_demo/ui/model/video.dart';
+import 'package:flutter_video_demo/ui/screen/vidoe_play.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoUploadMeida extends StatefulWidget {
@@ -10,7 +14,7 @@ class VideoUploadMeida extends StatefulWidget {
 }
 
 class _VideoUploadMeidaState extends State<VideoUploadMeida> {
-  VideoModel videoModel = VideoModel();
+  VideoModel? videoModel;
 
   @override
   void initState() {
@@ -25,9 +29,25 @@ class _VideoUploadMeidaState extends State<VideoUploadMeida> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView(children: []),
+      body: ListView(children: [
+        if (videoModel != null)
+          AspectRatio(
+            aspectRatio: 16 / 9,
+            child: CustomVideoPlay(videoModel: videoModel!, onChange: (v) {}),
+          )
+      ]),
       floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {}, label: const Icon(Icons.image)),
+          onPressed: () async {
+            final ImagePicker picker = ImagePicker();
+            XFile? file = await picker.pickVideo(source: ImageSource.gallery);
+
+            setState(() {
+              videoModel = VideoModel()
+                ..file = File(file!.path)
+                ..uploadFileStatus(APIStatus.loading);
+            });
+          },
+          label: const Icon(Icons.image)),
     );
   }
 }
