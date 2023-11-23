@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "177062455813",
+    "project_id": "sigma-lane-327220",
+    "storage_bucket": "sigma-lane-327220.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:177062455813:android:2af8927144bb8939f48a6c",
+        "android_client_info": {
+          "package_name": "com.kon.flutter_video_demo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "177062455813-lq6ummh0ktgcm15ivn0fe66sut05n6ef.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJaXaqRzLJUPIvw3IQw4nCl-CAHPsa_mc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "177062455813-lq6ummh0ktgcm15ivn0fe66sut05n6ef.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
