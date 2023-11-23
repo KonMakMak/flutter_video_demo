@@ -34,13 +34,13 @@ class _HomeScreenState extends State<HomeScreen> {
           _buildBtn(
             'Video upload',
             onPress: () {
-              Get.to(const VideoUploadMeida());
+              Get.to(() => const VideoUploadMeida());
             },
           ),
           _buildBtn(
             'Video View',
             onPress: () {
-              Get.to(const ViewVideoScreen());
+              Get.to(() => const ViewVideoScreen());
             },
           )
         ],

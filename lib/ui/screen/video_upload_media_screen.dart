@@ -1,9 +1,14 @@
+import 'dart:developer';
 import 'dart:io';
 
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_video_demo/ui/bloc/video_controller.dart';
 import 'package:flutter_video_demo/ui/model/video.dart';
 import 'package:flutter_video_demo/ui/screen/vidoe_play.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoUploadMeida extends StatefulWidget {
@@ -15,6 +20,7 @@ class VideoUploadMeida extends StatefulWidget {
 
 class _VideoUploadMeidaState extends State<VideoUploadMeida> {
   VideoModel? videoModel;
+  late VideoController videoController = Get.find();
 
   @override
   void initState() {
@@ -28,26 +34,36 @@ class _VideoUploadMeidaState extends State<VideoUploadMeida> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ListView(children: [
-        if (videoModel != null)
-          AspectRatio(
-            aspectRatio: 16 / 9,
-            child: CustomVideoPlay(videoModel: videoModel!, onChange: (v) {}),
-          )
-      ]),
-      floatingActionButton: FloatingActionButton.extended(
-          onPressed: () async {
-            final ImagePicker picker = ImagePicker();
-            XFile? file = await picker.pickVideo(source: ImageSource.gallery);
-
-            setState(() {
-              videoModel = VideoModel()
-                ..file = File(file!.path)
-                ..uploadFileStatus(APIStatus.loading);
-            });
-          },
-          label: const Icon(Icons.image)),
-    );
+    return GetBuilder(
+        init: videoController,
+        dispose: (state) {
+          state.controller?.uploadVideo = VideoModel();
+        },
+        builder: (_) {
+          return Scaffold(
+            body: ListView(children: [
+              if (_.uploadVideo.url != null || _.uploadVideo.file != null)
+                AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: CustomVideoPlay(
+                      videoModel: _.uploadVideo, onChange: (v) {}),
+                ),
+              Obx(() => Text(_.uploadVideo.toJson().toString())),
+            ]),
+            floatingActionButton: FloatingActionButton.extended(
+                onPressed: () async {
+                  final ImagePicker picker = ImagePicker();
+                  XFile? Xfile =
+                      await picker.pickVideo(source: ImageSource.gallery);
+                  if (Xfile != null) {
+                    videoController.videoUpload(Xfile,
+                        (progress, taskSnapshot) {
+                      _.uploadVideo.uploadProgress(progress);
+                    });
+                  }
+                },
+                label: const Icon(Icons.image)),
+          );
+        });
   }
 }

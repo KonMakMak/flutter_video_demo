@@ -39,19 +39,26 @@ class _ViewVideoScreenState extends State<ViewVideoScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Builder(builder: (context) {
-          return AspectRatio(
-              aspectRatio: 16 / 9,
-              child: Stack(children: [
-                CustomVideoPlay(
-                  videoModel: videoController.videoModel,
-                  onChange: (value) {
-                    print(value.duration);
-                  },
-                )
-              ]));
-        }),
-        // ),
+        // body: GetBuilder(
+        //     init: videoController,
+        //     builder: (_) {
+        //       return FutureBuilder<String?>(
+        //         builder: (context, snapshot) {
+        //           if (snapshot.hasData) {
+        //             return AspectRatio(
+        //                 aspectRatio: 16 / 9,
+        //                 child: Stack(children: [
+        //                   CustomVideoPlay(
+        //                     videoModel: videoController.readVideo,
+        //                     onChange: (value) {},
+        //                   )
+        //                 ]));
+        //           }
+        //           return Text(_.readVideo.uploadFileStatus.toString());
+        //         },
+        //         future: _.videoController(),
+        //       );
+        //     }),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             setState(() {

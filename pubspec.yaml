@@ -46,6 +46,9 @@ dependencies:
   overlay_support: ^2.1.0
   internet_connection_checker: ^1.0.0+1
   connectivity_plus: ^5.0.1
+  firebase_storage: ^11.5.2
+  path_provider: ^2.1.1
+  percent_indicator: ^4.2.3
 
 
 dev_dependencies:

@@ -22,6 +22,9 @@ def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: "com.google.gms.google-services"
 
 android {
     namespace "com.kon.flutter_video_demo"
@@ -69,6 +72,7 @@ flutter {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation(platform("com.google.firebase:firebase-bom:32.6.0"))
-    // implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-analytics")
     implementation 'com.android.support:multidex:1.0.3'
 }
+apply plugin: 'com.google.gms.google-services'
