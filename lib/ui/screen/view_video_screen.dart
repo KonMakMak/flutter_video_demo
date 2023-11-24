@@ -1,10 +1,7 @@
-import 'dart:math' hide log;
 import 'package:flutter/material.dart';
 import 'package:flutter_video_demo/ui/bloc/video_controller.dart';
-import 'package:flutter_video_demo/ui/model/video.dart';
 import 'package:flutter_video_demo/ui/screen/vidoe_play.dart';
 import 'package:get/get.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:video_player/video_player.dart';
 
 class ViewVideoScreen extends StatefulWidget {
@@ -39,26 +36,18 @@ class _ViewVideoScreenState extends State<ViewVideoScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        // body: GetBuilder(
-        //     init: videoController,
-        //     builder: (_) {
-        //       return FutureBuilder<String?>(
-        //         builder: (context, snapshot) {
-        //           if (snapshot.hasData) {
-        //             return AspectRatio(
-        //                 aspectRatio: 16 / 9,
-        //                 child: Stack(children: [
-        //                   CustomVideoPlay(
-        //                     videoModel: videoController.readVideo,
-        //                     onChange: (value) {},
-        //                   )
-        //                 ]));
-        //           }
-        //           return Text(_.readVideo.uploadFileStatus.toString());
-        //         },
-        //         future: _.videoController(),
-        //       );
-        //     }),
+        body: GetBuilder(
+            init: videoController,
+            builder: (_) {
+              return AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: Stack(children: [
+                    CustomVideoPlay(
+                      videoModel: videoController.readVideo,
+                      onChange: (value) {},
+                    )
+                  ]));
+            }),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             setState(() {

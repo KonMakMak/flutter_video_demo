@@ -1,15 +1,9 @@
-import 'dart:developer';
-import 'dart:io';
-
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_video_demo/ui/bloc/video_controller.dart';
 import 'package:flutter_video_demo/ui/model/video.dart';
 import 'package:flutter_video_demo/ui/screen/vidoe_play.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:video_player/video_player.dart';
 
 class VideoUploadMeida extends StatefulWidget {
   const VideoUploadMeida({super.key});
@@ -46,7 +40,10 @@ class _VideoUploadMeidaState extends State<VideoUploadMeida> {
                 AspectRatio(
                   aspectRatio: 16 / 9,
                   child: CustomVideoPlay(
-                      videoModel: _.uploadVideo, onChange: (v) {}),
+                      videoModel: _.uploadVideo,
+                      type: VideoViewType.upload,
+                      onChange: (v) {},
+                      onRemove: () {}),
                 ),
               Obx(() => Text(_.uploadVideo.toJson().toString())),
             ]),

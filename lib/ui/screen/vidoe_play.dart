@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_video_demo/ui/model/video.dart';
 import 'package:get/get.dart';
@@ -12,10 +11,18 @@ class CustomVideoPlay extends StatefulWidget {
       {super.key,
       required this.videoModel,
       required this.onChange,
-      this.type = VideoViewType.play});
+      this.onRemove,
+      this.type = VideoViewType.play,
+      this.onDelete,
+      this.onRefresh,
+      this.onError});
   final VideoModel videoModel;
   final VideoViewType type;
   final ValueChanged<VideoPlayerValue> onChange;
+  final VoidCallback? onRemove;
+  final VoidCallback? onDelete;
+  final VoidCallback? onRefresh;
+  final VoidCallback? onError;
 
   @override
   State<CustomVideoPlay> createState() => _CustomVideoPlayState();
@@ -25,6 +32,8 @@ class _CustomVideoPlayState extends State<CustomVideoPlay> {
   ValueNotifier<VideoPlayerValue?> currentPosition = ValueNotifier(null);
   VideoPlayerController? controller;
   late Future<void> futureController;
+
+  VideoModel get videoModel => widget.videoModel;
 
   bool _isPlaying = false;
 
@@ -76,15 +85,25 @@ class _CustomVideoPlayState extends State<CustomVideoPlay> {
             ),
           );
         } else {
-          return _videoPlayer();
+          return Obx(() {
+            return _videoPlayer();
+          });
         }
       },
     );
   }
 
   SizedBox _videoPlayer() {
-    bool isUploadFailed =
-        widget.videoModel.uploadFileStatus.value == APIStatus.error;
+    bool isUploadFailed = true;
+    switch (videoModel.uploadFileStatus.value) {
+      case APIStatus.loaded:
+      case APIStatus.loading:
+        isUploadFailed = false;
+        break;
+      default:
+        isUploadFailed = true;
+    }
+
     return SizedBox(
       height: controller!.value.size.height,
       width: double.infinity,
@@ -92,29 +111,44 @@ class _CustomVideoPlayState extends State<CustomVideoPlay> {
           aspectRatio: controller!.value.aspectRatio,
           child: Stack(children: [
             VideoPlayer(controller!),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                /// Remove icon
+                if (widget.onRemove != null)
+                  IconButton(
+                      onPressed: () {},
+                      style: IconButton.styleFrom(
+                          visualDensity: VisualDensity.compact,
+                          backgroundColor: Colors.grey.shade700,
+                          tapTargetSize: MaterialTapTargetSize.padded,
+                          padding: const EdgeInsets.all(0)),
+                      icon: const Icon(Icons.close, color: Colors.white)),
+              ],
+            ),
 
             /// Set opacity to video if video is uploading
             if (isUploadFailed)
               Container(color: Colors.transparent.withOpacity(0.5)),
 
             ///
-            _videoControll(),
+            _videoControll(isUploadFailed),
           ])),
     );
   }
 
-  _videoControll() {
-    if (widget.videoModel.isOnServer) {
-      ///
-
-      return _videoIsUpload();
+  _videoControll(bool isUploadFailed) {
+    if (widget.type == VideoViewType.play ||
+        videoModel.uploadFileStatus.value == APIStatus.loaded) {
+      return Positioned.fill(
+        bottom: -10,
+        child: _playControllerLayout(),
+      );
     }
-    return Positioned.fill(
-      bottom: -10,
-      child: _playControllerLayout(),
-    );
+    return _videoIsUpload(isUploadFailed);
   }
 
+  /// Widget error widget
   Widget get _errorWidget => Align(
         alignment: Alignment.center,
         child: Column(
@@ -127,7 +161,7 @@ class _CustomVideoPlayState extends State<CustomVideoPlay> {
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: Colors.white),
                 ),
-                onPressed: () {},
+                onPressed: widget.onRefresh,
                 icon: const Icon(Icons.refresh, color: Colors.white),
                 label: const Text("Retry",
                     style: TextStyle(fontSize: 13, color: Colors.white))),
@@ -135,48 +169,37 @@ class _CustomVideoPlayState extends State<CustomVideoPlay> {
         ),
       );
 
-  Obx _videoIsUpload() {
+  ///
+  _videoIsUpload(bool isUploadFailed) {
+    /// Check upload status
     bool isUploadCompleted =
-        widget.videoModel.uploadFileStatus.value == APIStatus.loaded;
-    bool isUploadFailed =
-        widget.videoModel.uploadFileStatus.value == APIStatus.error;
-    return Obx(() {
-      return Positioned.fill(
-          // bottom: 0,
-          child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              IconButton(
-                  onPressed: () {},
-                  style: IconButton.styleFrom(
-                      visualDensity: VisualDensity.compact,
-                      backgroundColor: Colors.grey.shade700,
-                      tapTargetSize: MaterialTapTargetSize.padded,
-                      padding: const EdgeInsets.all(0)),
-                  icon: const Icon(Icons.close, color: Colors.white))
-            ],
-          ),
-          if (isUploadFailed) _errorWidget,
-          if (!isUploadCompleted) ...[
-            const Spacer(),
-            const Text("Uploading...",
-                style: TextStyle(fontSize: 13, color: Colors.white)),
-            const SizedBox(height: 10),
-            LinearPercentIndicator(
-              padding: EdgeInsets.zero,
-              lineHeight: 2,
-              percent: widget.videoModel.uploadProgress.value / 100.0,
-              barRadius: const Radius.circular(16),
-              progressColor: Colors.red,
-              backgroundColor: Colors.white,
-            )
-          ]
-        ],
-      ).marginAll(16));
-    });
+        videoModel.uploadFileStatus.value == APIStatus.loaded;
+
+    return Positioned.fill(
+        // bottom: 0,
+        child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        /// Error btn
+        if (isUploadFailed) _errorWidget,
+
+        /// Upload progress
+        if (!isUploadCompleted) ...[
+          const Spacer(),
+          const Text("Uploading...",
+              style: TextStyle(fontSize: 13, color: Colors.white)),
+          const SizedBox(height: 10),
+          LinearPercentIndicator(
+            padding: EdgeInsets.zero,
+            lineHeight: 2,
+            percent: widget.videoModel.uploadProgress.value / 100.0,
+            barRadius: const Radius.circular(16),
+            progressColor: Colors.red,
+            backgroundColor: Colors.white,
+          )
+        ]
+      ],
+    ).marginAll(16));
   }
 
   Column _playControllerLayout() {

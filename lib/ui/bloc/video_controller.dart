@@ -24,7 +24,7 @@ class VideoController extends GetxController {
 
   Reference get firebaseRe => FirebaseStorage.instance.ref('');
   Future videoController() async {
-    var url = await firebaseRe.child('video/');
+    var url = firebaseRe.child('video/');
 
     readVideo.url = await url.getDownloadURL().then((value) {
       // log(">>>>>>> $value");
@@ -42,7 +42,7 @@ class VideoController extends GetxController {
     /// Before push to server, declare some value for local video
     uploadVideo
       ..file = convertFile
-      ..isOnServer = true
+      ..isOnServer = false
       ..uploadFileStatus(APIStatus.loading);
     update();
 
@@ -57,9 +57,15 @@ class VideoController extends GetxController {
       String downloadUrl = await ref.getDownloadURL();
       uploadVideo
         ..url = downloadUrl
-        ..isOnServer = true
+        ..isOnServer = false
         ..uploadFileStatus(APIStatus.loaded);
     });
+
+    // uploadTask.onError((error, stackTrace) {
+    //   uploadVideo
+    //     ..isOnServer = true
+    //     ..uploadFileStatus(APIStatus.error);
+    // });
 
     uploadTask.snapshotEvents.listen((TaskSnapshot taskSnapshot) {
       switch (taskSnapshot.state) {
@@ -78,6 +84,7 @@ class VideoController extends GetxController {
           break;
         case TaskState.error:
           onProgress(0, taskSnapshot);
+          uploadVideo.uploadFileStatus(APIStatus.error);
           break;
         case TaskState.success:
           onProgress(100.0, taskSnapshot);
